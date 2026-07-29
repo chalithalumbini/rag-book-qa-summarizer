@@ -1,103 +1,221 @@
+# 📚 Retrieval-Augmented QA & Summarization over Public Domain Books
 
-# Retrieval-Augmented QA & Summarization over Public Domain Books
+A **Retrieval-Augmented Generation (RAG)** pipeline that downloads public-domain books from **Project Gutenberg**, indexes them using **Sentence Transformers** and **FAISS**, and performs **semantic search**, **question answering**, and **text summarization** using Transformer models.
 
-A Retrieval-Augmented Generation (RAG) pipeline that downloads public-domain
-books (e.g. agricultural texts) from Project Gutenberg, indexes them for
-semantic search, and answers questions / generates summaries using
-transformer models — with an interactive Gradio demo.
+The project also includes an interactive **Gradio** web application.
 
-## Pipeline
+---
 
-1. **Data collection** — download plain-text books from Project Gutenberg and
-   split them into paragraphs (`preprocessed_books.json`).
-2. **Indexing** — embed paragraphs with a `sentence-transformers` model
-   (`all-MiniLM-L6-v2` / `multi-qa-mpnet-base-dot-v1`) and build a FAISS
-   index for fast nearest-neighbor retrieval.
-3. **Retrieval** — given a query, retrieve the top-k most relevant
-   paragraphs from the FAISS index.
-4. **QA & Summarization** — use `bert-large-uncased-whole-word-masking-finetuned-squad`
-   for extractive question answering and `facebook/bart-large-cnn` (or a
-   fine-tuned BART) for summarization of the retrieved context.
-5. **Fine-tuning (optional)** — notebook cells for fine-tuning BART
-   (summarization) and BERT (QA) on synthetic/derived datasets built from
-   the book paragraphs.
-6. **Demo** — a Gradio app that ties retrieval + QA/summarization together
-   into an interactive interface.
+## ✨ Features
 
-## Project structure
+- 📖 Download books from Project Gutenberg
+- 🧹 Preprocess and clean text
+- 🔍 Semantic search using Sentence Transformers
+- ⚡ Fast vector retrieval with FAISS
+- ❓ Question Answering using BERT
+- 📝 Text Summarization using BART
+- 🌐 Interactive Gradio interface
+- 🎯 Optional model fine-tuning
+
+---
+
+## 🏗️ Pipeline
 
 ```
-.
-├── notebook.ipynb      # Main notebook: full pipeline end to end
-├── requirements.txt    # Python dependencies
-└── README.md
+Project Gutenberg Books
+            │
+            ▼
+     Text Preprocessing
+            │
+            ▼
+ Paragraph Segmentation
+            │
+            ▼
+ Sentence Embeddings
+            │
+            ▼
+      FAISS Index
+            │
+            ▼
+ User Question
+            │
+            ▼
+ Semantic Retrieval
+            │
+            ▼
+ ┌───────────────┬───────────────┐
+ │               │               │
+ ▼               ▼               ▼
+Question      Summary       Retrieved
+Answer        Generation      Context
 ```
 
-## Setup
+---
+
+## 📂 Project Structure
+
+```text
+rag-book-qa-summarizer/
+│── notebook.ipynb
+│── README.md
+│── requirements.txt
+│── .gitignore
+│── LICENSE
+│── images/
+└── sample_data/
+```
+
+---
+
+# 🚀 Getting Started
+
+## 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
-cd <repo-name>
-python -m venv venv
-source venv/bin/activate   # on Windows: venv\Scripts\activate
-pip install -r requirements.txt
+git clone https://github.com/<your-github-username>/rag-book-qa-summarizer.git
+cd rag-book-qa-summarizer
 ```
 
-## Usage
+---
 
-Open and run `notebook.ipynb` top to bottom in Jupyter or VS Code:
+## 2. Create a Virtual Environment
+
+### Windows (PowerShell)
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks activation:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+```
+
+### Linux / macOS
 
 ```bash
-jupyter notebook notebook.ipynb
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-The notebook will:
-- Download the source books and build `preprocessed_books.json`
-- Compute paragraph embeddings and a FAISS index
-- Load the QA/summarization models
-- Launch a Gradio interface for interactive querying
+---
 
-> Note: downloaded books, embeddings, and the FAISS index are treated as
-> generated artifacts and are not tracked in version control (see
-> `.gitignore`). Re-run the early notebook cells to regenerate them.
+## 3. Install Dependencies
 
-## Models used
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+---
+
+## 4. Launch Jupyter Notebook
+
+```bash
+jupyter notebook
+```
+
+or
+
+```bash
+jupyter lab
+```
+
+Open **`notebook.ipynb`** and run all cells.
+
+---
+
+## 📋 Requirements
+
+- Python 3.10+
+- Git
+- Jupyter Notebook or JupyterLab
+
+---
+
+## 🤖 Models Used
 
 | Task | Model |
-|---|---|
-| Embedding / retrieval | `sentence-transformers/all-MiniLM-L6-v2`, `multi-qa-mpnet-base-dot-v1` |
-| Question answering | `bert-large-uncased-whole-word-masking-finetuned-squad` |
-| Summarization | BART (`facebook/bart-large-cnn` base, fine-tunable) |
-| Vector search | FAISS (`IndexFlatL2`) |
+|------|-------|
+| Embedding | sentence-transformers/all-MiniLM-L6-v2 |
+| Alternative Embedding | sentence-transformers/multi-qa-mpnet-base-dot-v1 |
+| Question Answering | bert-large-uncased-whole-word-masking-finetuned-squad |
+| Summarization | facebook/bart-large-cnn |
+| Vector Search | FAISS (IndexFlatL2) |
 
-## Features
+---
 
-- Retrieval-Augmented Generation (RAG)
-- Semantic search using Sentence Transformers
-- FAISS vector indexing
-- Extractive Question Answering with BERT
-- Abstractive Summarization with BART
-- Interactive Gradio interface
-- Optional fine-tuning for QA and summarization
+## 💡 Example
 
-## Example Query
+### Question
 
-Question:
 > What are the main causes of soil erosion?
 
-Retrieved Context:
-> ...
+### Generated Answer
 
-Generated Answer:
-> Soil erosion is mainly caused by...
+> Soil erosion is primarily caused by water, wind, and unsustainable agricultural practices.
 
-Summary:
-> Soil erosion results from...
+### Summary
 
-## Future Improvements
+> Soil erosion results from natural forces and poor land management.
 
-- Support multiple document collections
-- Hybrid BM25 + Dense Retrieval
-- GPU acceleration
-- Docker deployment
-- Evaluation with RAGAS
+---
+
+## 📌 Future Improvements
+
+- Hybrid Retrieval (BM25 + Dense Retrieval)
+- Multi-document Retrieval
+- Docker Support
+- FastAPI REST API
+- GPU Acceleration
+- Multi-language Support
+- RAGAS Evaluation
+
+---
+
+## 📷 Demo
+
+Add screenshots of the Gradio interface here.
+
+```text
+images/demo.png
+```
+
+Example:
+
+```markdown
+![Demo](images/demo.png)
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Commit your changes.
+4. Push to your branch.
+5. Open a Pull Request.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+## 🙏 Acknowledgements
+
+This project makes use of the following open-source projects:
+
+- Hugging Face Transformers
+- Sentence Transformers
+- FAISS
+- Gradio
+- Project Gutenberg
