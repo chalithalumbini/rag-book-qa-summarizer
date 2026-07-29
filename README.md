@@ -1,1 +1,0 @@
-# rag-book-qa-summarizer
